@@ -26,6 +26,10 @@ def verif_usb():
                                 pendrives_cam_atu.append(device.device_node)
                                 if not device.device_node in pendrives_cam:
                                         pendrives_cam.append(device.device_node)
+                                        pendrives["Label"] = device.properties.get("ID_FS_LABEL")
+                                        pendrives["Caminho"] = device.properties.get("DEVNAME")
+                                        pendrives["Modelo"] = device.properties.get("ID_MODEL")
+                                        pendrives["Tamanho"] = device.attributes.get(attribute="size")
                                         
 
         for desativo in pendrives_cam:
