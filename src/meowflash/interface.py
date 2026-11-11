@@ -5,7 +5,8 @@ import threading
 from tkinter import ttk, Scrollbar, PhotoImage
 from src.meowflash import hardware
 
-def ini_interface(close=False):
+def ini_interface():
+    global criar_aba, note, excluir_aba
 
     janela = tk.Tk()
     janela.title("MeowFlesh")
@@ -15,9 +16,6 @@ def ini_interface(close=False):
     janela.minsize(450, 500)
     janela.maxsize(450, 500)
     janela.config(background="#1F1F1F")
-
-    if close:
-        janela.destroy()
 
     es = ttk.Style(janela)
     es.theme_use("clam")
@@ -31,6 +29,15 @@ def ini_interface(close=False):
 
     aba_geral = ttk.Frame(note, style="InteriorAba.TFrame")
     note.add(aba_geral, text="Geral")
+
+    def criar_aba(lista):
+
+        for abas in lista:
+            aba = ttk.Frame(note, style="InteriorAba.TFrame")
+            note.add(aba, text=f"{abas["Label"]}")
+
+    def excluir_aba(lista, local):
+            note.forget(f"{lista[local]["Label"]}")
 
     def close():
         hardware.close()
