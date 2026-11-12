@@ -36,8 +36,13 @@ def ini_interface():
             aba = ttk.Frame(note, style="InteriorAba.TFrame")
             note.add(aba, text=f"{abas["Label"]}")
 
-    def excluir_aba(lista, local):
-            note.forget(f"{lista[local]["Label"]}")
+    def excluir_aba(remover):
+        global note
+
+        for id in note.tabs():
+            if note.tab(id, "text") == f"{remover}":
+                note.forget(id)
+                break
 
     def close():
         hardware.close()

@@ -11,11 +11,12 @@ pendrives = []
 
 evento = threading.Event()
 
-def aba_pendrive(criar=True, local=0):
+
+def aba_pendrive(criar=True, remover=None):
        if criar:
            interface.criar_aba(pendrives)
        else:
-           interface.excluir_aba(pendrives, local)
+           interface.excluir_aba(remover)
              
 
 def verif_usb():
@@ -51,7 +52,7 @@ def verif_usb():
 
         for desativo in pendrives:
                if not desativo["Caminho"] in pendrives_cam_atu:
-                      aba_pendrive(criar=False, local=pendrives.index(desativo))
+                      aba_pendrive(criar=False, remover=desativo["Label"])
                       pendrives.remove(desativo)
 
                
