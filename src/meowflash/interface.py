@@ -31,10 +31,13 @@ def ini_interface():
     note.add(aba_geral, text="Geral")
 
     def criar_aba(lista):
+        global note
 
         for abas in lista:
-            aba = ttk.Frame(note, style="InteriorAba.TFrame")
-            note.add(aba, text=f"{abas["Label"]}")
+            for abac in note.tabs():
+                if not note.tab(abac, "text") == abas["Label"]:
+                    aba = ttk.Frame(note, style="InteriorAba.TFrame")
+                    note.add(aba, text=f"{abas["Label"]}")
 
     def excluir_aba(remover):
         global note

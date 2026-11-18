@@ -32,15 +32,17 @@ def verif_usb():
                 print()
         elif sys.platform.startswith("linux"):
                 for device in context.list_devices(subsystem="block", DEVTYPE="disk"):
+                        pendrivesdic = {}
+                        tamanho = int(device.attributes.get("size", 0))
+                        tamanhof = (tamanho * 512) / (1024 ** 3)
                         if device.find_parent("usb"):
                                 pendrives_cam_atu.append(device.device_node)
                                 if not device.device_node in pendrives_cam:
                                         pendrives_cam.append(device.device_node)
-                                        pendrivesdic = {}
                                         pendrivesdic["Label"] = device.properties.get("ID_FS_LABEL")
                                         pendrivesdic["Caminho"] = device.properties.get("DEVNAME")
+                                        pendrivesdic["Tamanho"] = tamanhof
                                         pendrivesdic["Modelo"] = device.properties.get("ID_MODEL")
-                                        pendrivesdic["Tamanho"] = device.attributes.get(attribute="size").decode('utf-8')
                                         pendrivesdic["Modo"] = device.attributes.get(attribute="ro")
                                         pendrives.append(pendrivesdic)
                                         aba_pendrive()
@@ -55,7 +57,6 @@ def verif_usb():
                       aba_pendrive(criar=False, remover=desativo["Label"])
                       pendrives.remove(desativo)
 
-               
                       
         print(pendrives)
 
