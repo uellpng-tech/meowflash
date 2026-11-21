@@ -3,62 +3,81 @@ import pyudev
 import time
 import threading
 from src.meowflash import interface
-
+             
 context = pyudev.Context()
 
-pendrives_cam = []
 pendrives = []
 
-evento = threading.Event()
+def monitor_usb():
+    monitor = pyudev.Monitor.from_netlink(context)
+    monitor.filter_by('block')
 
-
-def aba_pendrive(criar=True, remover=None):
-       if criar:
-           interface.criar_aba(pendrives)
-       else:
-           interface.excluir_aba(remover)
-             
-
-def verif_usb():
-    global pendrives
-
-    while not evento.is_set():
-
-        time.sleep(1)
-    
-        pendrives_cam_atu = []
+    for device in iter(monitor.poll, None):
         
-        if sys.platform.startswith("win32"):
-                print()
-        elif sys.platform.startswith("linux"):
-                for device in context.list_devices(subsystem="block", DEVTYPE="disk"):
-                        pendrivesdic = {}
-                        tamanho = int(device.attributes.get("size", 0))
-                        tamanhof = (tamanho * 512) / (1024 ** 3)
-                        if device.find_parent("usb"):
-                                pendrives_cam_atu.append(device.device_node)
-                                if not device.device_node in pendrives_cam:
-                                        pendrives_cam.append(device.device_node)
-                                        pendrivesdic["Label"] = device.properties.get("ID_FS_LABEL")
-                                        pendrivesdic["Caminho"] = device.properties.get("DEVNAME")
-                                        pendrivesdic["Tamanho"] = tamanhof
-                                        pendrivesdic["Modelo"] = device.properties.get("ID_MODEL")
-                                        pendrivesdic["Modo"] = device.attributes.get(attribute="ro")
-                                        pendrives.append(pendrivesdic)
-                                        aba_pendrive()
-                                        
+        if device.action == "add":
+                if device.find_parent("usb"):
+                
+                        if device.device_type == "partition":
+                                for sn in pendrives:
+                                        if sn["Número de Série"] == device.properties.get("ID_SERIAL_SHORT"):
+                                                particao = {}
+                                                particao["Label"] = device.properties.get("ID_FS_LABEL")
+                                                particao["Sistema de arquivos"] = device.properties.get("ID_FS_TYPE")
 
-        for desativoc in pendrives_cam:
-                if not desativoc in pendrives_cam_atu:
-                        pendrives_cam.remove(desativoc)
+                                                tamanhop = int(device.attributes.get("size", 0))
+                                                tamanhop_formatado = (tamanhop * 512) / (1024 ** 3) 
+                                                particao["Tamanho"] = tamanhop_formatado
 
-        for desativo in pendrives:
-               if not desativo["Caminho"] in pendrives_cam_atu:
-                      aba_pendrive(criar=False, remover=desativo["Label"])
-                      pendrives.remove(desativo)
+                                                particao["Caminho"] = device.properties.get("DEVNAME")
 
-                      
-        print(pendrives)
+                                                sn["Partições"].append(particao)
 
-def close():
-   evento.set()
+                        elif device.device_type == "disk":
+
+                                if len(pendrives) == 0:
+                                        device_atual = {}
+                                        device_atual["Modelo"] = device.properties.get("ID_MODEL")
+                                        device_atual["Fabricante"] = device.get("ID_VENDOR")
+                                        device_atual["Número de Série"] = device.properties.get("ID_SERIAL_SHORT")
+                                       
+                                        tamanho = int(device.attributes.get("size", 0))
+                                        tamanho_formatado = (tamanho * 512) / (1024 ** 3)
+                                        device_atual["Tamanho"] = tamanho_formatado
+                                       
+                                        device_atual["Caminho"] = device.properties.get("DEVNAME")
+                                        device_atual["Partições"] = []
+                                       
+                                        pendrives.append(device_atual)
+                                        interface.criar_aba(device_atual)
+                                       
+                                for pendrive in pendrives:
+                                        if not device.properties.get("ID_SERIAL_SHORT") in pendrive["Número de Série"]:
+                                                device_atual = {}
+                                                device_atual["Modelo"] = device.properties.get("ID_MODEL")
+                                                device_atual["Fabricante"] = device.get("ID_VENDOR")
+                                                device_atual["Número de Série"] = device.properties.get("ID_SERIAL_SHORT")
+
+                                                tamanho = int(device.attributes.get("size", 0))
+                                                tamanho_formatado = (tamanho * 512) / (1024 ** 3)
+                                                device_atual["Tamanho"] = tamanho_formatado
+
+                                                device_atual["Caminho"] = device.properties.get("DEVNAME")
+                                                device_atual["Partições"] = []
+
+                                                pendrives.append(device_atual)
+
+                                                interface.criar_aba(device_atual)
+
+                        print(pendrives)
+
+        elif device.action == "remove":
+               if device.find_parent("usb"):
+                      if device.device_type == "disk":
+                        for pendriverm in pendrives:
+                                if pendriverm["Número de Série"] == device.properties.get("ID_SERIAL_SHORT"):
+                                        pendrives.remove(pendriverm)
+                                        interface.excluir_aba(pendriverm["Modelo"])
+
+               print(pendrives)
+
+                             

@@ -30,14 +30,11 @@ def ini_interface():
     aba_geral = ttk.Frame(note, style="InteriorAba.TFrame")
     note.add(aba_geral, text="Geral")
 
-    def criar_aba(lista):
+    def criar_aba(dic):
         global note
 
-        for abas in lista:
-            for abac in note.tabs():
-                if not note.tab(abac, "text") == abas["Label"]:
-                    aba = ttk.Frame(note, style="InteriorAba.TFrame")
-                    note.add(aba, text=f"{abas["Label"]}")
+        aba = ttk.Frame(note, style="InteriorAba.TFrame")
+        note.add(aba, text=f"{dic["Modelo"]}")
 
     def excluir_aba(remover):
         global note
@@ -45,11 +42,6 @@ def ini_interface():
         for id in note.tabs():
             if note.tab(id, "text") == f"{remover}":
                 note.forget(id)
-                break
 
-    def close():
-        hardware.close()
-        janela.destroy()
-
-    janela.protocol("WM_DELETE_WINDOW", close)
+    janela.protocol("WM_DELETE_WINDOW", janela.destroy)
     janela.mainloop()
