@@ -4,6 +4,7 @@ import os
 import threading
 from tkinter import ttk, Scrollbar, PhotoImage
 from src.meowflash import hardware
+from PIL import Image, ImageTk
 
 def ini_interface():
     global criar_aba, note, excluir_aba
@@ -33,7 +34,7 @@ def ini_interface():
     canvas = tk.Canvas(aba_geral, background="#1B1B1B", highlightthickness=0, borderwidth=0)
     canvas.pack(fill="both", expand=True)
 
-    frame_scroll = ttk.Frame(canvas, style="InteriorAba.TFrame", width=400, height=1000)
+    frame_scroll = ttk.Frame(canvas, style="InteriorAba.TFrame", width=400, height=2000)
 
     canvas_id = canvas.create_window(0, 0, window=frame_scroll, anchor="nw")
 
@@ -42,7 +43,7 @@ def ini_interface():
 
     scrolada = ttk.Scrollbar(janela, orient="vertical", command=canvas.yview, style="Vertical.TScrollbar")
     scrolada.pack(side="right", ipady=350, padx=10, pady=(32, 16))
-    canvas.config(yscrollcommand=scrolada.set, scrollregion=(0, 0, 400, 1000))
+    canvas.config(yscrollcommand=scrolada.set, scrollregion=(0, 0, 400, 2000))
 
     def scroll(event):
         canvas.itemconfig(canvas_id, width=event.width)
@@ -52,7 +53,7 @@ def ini_interface():
     atalhos = []
 
     def criar_aba(dic):
-        global note
+        global note, img_atalho
 
         aba = ttk.Frame(note, style="InteriorAba.TFrame")
         note.add(aba, text=f"{dic["Modelo"]}")
@@ -60,7 +61,11 @@ def ini_interface():
         def entrar():
             note.select(aba)
 
-        btn_aba = tk.Button(frame_scroll, text=dic["Modelo"], command=entrar)
+        img_atalho_pil = Image.open("src/meowflash/assets/img-usb.png")
+        img_atalho_pilf = img_atalho_pil.resize((42, 42))
+        img_atalho = ImageTk.PhotoImage(img_atalho_pilf)
+
+        btn_aba = ttk.Button(frame_scroll, image=img_atalho, command=entrar, compound= tk.LEFT)
         btn_aba.pack(fill="x", ipady=40)
 
         atalhos.append(btn_aba)
