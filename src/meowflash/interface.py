@@ -2,6 +2,7 @@ import tkinter as tk
 import sys
 import os
 import threading
+import matplotlib.pyplot as plt
 from tkinter import ttk, Scrollbar, PhotoImage
 from src.meowflash import hardware
 from PIL import Image, ImageTk
@@ -53,8 +54,12 @@ def ini_interface():
     atalhos = []
     bordas = []
 
+    pen_img = Image.open("src/meowflash/assets/img-usb.png")
+    pen_imgf = pen_img.resize((130, 130))
+    img_pen = ImageTk.PhotoImage(pen_imgf)
+
     def criar_aba(dic):
-        global note, img_atalho, img_pen
+        global note
 
         aba = ttk.Frame(note, style="InteriorAba.TFrame")
         note.add(aba, text=f"{dic["Modelo"]}")
@@ -73,12 +78,54 @@ def ini_interface():
         borda_aba.pack(fill="x")
         borda_aba.pack_propagate(False)
 
-        pen_img = Image.open("src/meowflash/assets/img-usb.png")
-        pen_imgf = pen_img.resize((100, 100))
-        img_pen = ImageTk.PhotoImage(pen_imgf)
-
         img_label = tk.Label(btn_aba, image=img_pen, bg="#1B1B1B")
-        img_label.place(x=10, y=10)
+        img_label.place(x=9, y=2)
+        img_label.bind("<Button-1>", lambda event: entrar())
+
+        linha = tk.Frame(btn_aba, height=108, width=1, bg="#111111")
+        linha.place(x=150, y=14)
+        linha.bind("<Button-1>", lambda event: entrar())
+
+        es.configure("Titulo.TLabel", font=("Arial", 10, "bold"), background="#1B1B1B", foreground="#383838")
+        es.configure("Info.TLabel", font=("Arial", 8), background="#1B1B1B", foreground="#383838")
+
+        fabricantet = ttk.Label(btn_aba, text="Fabricante:", style="Titulo.TLabel")
+        fabricantei = ttk.Label(btn_aba, text=dic["Fabricante"], style="Info.TLabel")
+        fabricantet.place(x=160, y=14)
+        fabricantei.place(x=230, y=16.5)
+        fabricantet.bind("<Button-1>", lambda event: entrar())
+        fabricantei.bind("<Button-1>", lambda event: entrar())
+
+        modelot = ttk.Label(btn_aba, text="Modelo:", style="Titulo.TLabel")
+        modeloi = ttk.Label(btn_aba, text=dic["Modelo"], style="Info.TLabel")
+        modelot.place(x=160, y=33)
+        modeloi.place(x=212, y=35.5)
+        modelot.bind("<Button-1>", lambda event: entrar())
+        modeloi.bind("<Button-1>", lambda event: entrar())
+
+        snt = ttk.Label(btn_aba, text="N/S:", style="Titulo.TLabel")
+        sni = ttk.Label(btn_aba, text=dic["Número de Série"], style="Info.TLabel")
+        snt.place(x=160, y=52)
+        sni.place(x=190, y=54.5)
+        snt.bind("<Button-1>", lambda event: entrar())
+        sni.bind("<Button-1>", lambda event: entrar())
+
+        for particoes in dic["Partições"]:
+            plt.barh(particoes["Label"], particoes["Tamanho"])
+
+        tamanhot = ttk.Label(btn_aba, text="Tamanho:", style="Titulo.TLabel")
+        tamanhoi = ttk.Label(btn_aba, text=dic["Tamanho"], font=("Arial", 10), background="#1B1B1B", foreground="#383838")
+        tamanhot.place(x=160, y=100)
+        tamanhoi.place(x=227, y=100)
+        tamanhot.bind("<Button-1>", lambda event: entrar())
+        tamanhoi.bind("<Button-1>", lambda event: entrar())
+
+        caminhot = ttk.Label(btn_aba, text="Caminho:", style="Titulo.TLabel")
+        caminhoi = ttk.Label(btn_aba, text=dic["Caminho"], style="Info.TLabel")
+        caminhot.place(x=270, y=100)
+        caminhoi.place(x=335, y=102.5)
+        caminhot.bind("<Button-1>", lambda event: entrar())
+        caminhoi.bind("<Button-1>", lambda event: entrar())
 
         atalhos.append(btn_aba)
         bordas.append(borda_aba)

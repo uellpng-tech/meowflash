@@ -33,7 +33,8 @@ def monitor_usb():
                                                 particao["Sistema de arquivos"] = device.properties.get("ID_FS_TYPE")
 
                                                 tamanhop = int(device.attributes.get("size", 0))
-                                                tamanhop_formatado = (tamanhop * 512) / (1024 ** 3) 
+                                                tamanhop_cont = (tamanhop * 512) / (1024 ** 3) 
+                                                tamanhop_formatado = int(tamanhop_cont)
                                                 particao["Tamanho"] = tamanhop_formatado
 
                                                 particao["Caminho"] = device.properties.get("DEVNAME")
@@ -49,8 +50,9 @@ def monitor_usb():
                                         device_atual["Número de Série"] = device.properties.get("ID_SERIAL_SHORT")
                                        
                                         tamanho = int(device.attributes.get("size", 0))
-                                        tamanho_formatado = (tamanho * 512) / (1024 ** 3)
-                                        device_atual["Tamanho"] = tamanho_formatado
+                                        tamanho_cont = (tamanho * 512) / (1024 ** 3)
+                                        tamanho_formatado = int(tamanho_cont)
+                                        device_atual["Tamanho"] = f"{tamanho_formatado}GB"
                                        
                                         device_atual["Caminho"] = device.properties.get("DEVNAME")
                                         device_atual["Partições"] = []
