@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from tkinter import ttk, Scrollbar, PhotoImage
 from src.meowflash import hardware
 from PIL import Image, ImageTk
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 def ini_interface():
     global criar_aba, note, excluir_aba
@@ -110,9 +111,6 @@ def ini_interface():
         snt.bind("<Button-1>", lambda event: entrar())
         sni.bind("<Button-1>", lambda event: entrar())
 
-        for particoes in dic["Partições"]:
-            plt.barh(particoes["Label"], particoes["Tamanho"])
-
         tamanhot = ttk.Label(btn_aba, text="Tamanho:", style="Titulo.TLabel")
         tamanhoi = ttk.Label(btn_aba, text=dic["Tamanho"], font=("Arial", 10), background="#1B1B1B", foreground="#383838")
         tamanhot.place(x=160, y=100)
@@ -126,6 +124,17 @@ def ini_interface():
         caminhoi.place(x=335, y=102.5)
         caminhot.bind("<Button-1>", lambda event: entrar())
         caminhoi.bind("<Button-1>", lambda event: entrar())
+
+        es.configure("Bordap.TFrame", background="#1D1D1D")
+
+        borda_particoes = ttk.Frame(btn_aba, style="Bordap.TFrame")
+        borda_particoes.place(x=317, y=6, width=76, height=95)
+        
+        particoes = tk.Listbox(btn_aba, bg="#353535", activestyle="none", fg="#111111", borderwidth=0, highlightthickness=0, font=("Arial", 6))
+        particoes.place(x=320, y=8, width=70, height=90)
+
+        for particao in dic["Partições"]:
+            particoes.insert(tk.END, f"{particao['Label']} | {particao['Caminho']}")
 
         atalhos.append(btn_aba)
         bordas.append(borda_aba)

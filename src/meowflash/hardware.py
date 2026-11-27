@@ -35,11 +35,14 @@ def monitor_usb():
                                                 tamanhop = int(device.attributes.get("size", 0))
                                                 tamanhop_cont = (tamanhop * 512) / (1024 ** 3) 
                                                 tamanhop_formatado = int(tamanhop_cont)
-                                                particao["Tamanho"] = tamanhop_formatado
+                                                particao["Tamanho"] = f"{tamanhop_formatado}GB"
 
                                                 particao["Caminho"] = device.properties.get("DEVNAME")
 
                                                 sn["Partições"].append(particao)
+
+                                                interface.excluir_aba(sn["Modelo"])
+                                                interface.criar_aba(sn)
 
                         elif device.device_type == "disk":
 
@@ -69,7 +72,7 @@ def monitor_usb():
 
                                                 tamanho = int(device.attributes.get("size", 0))
                                                 tamanho_formatado = (tamanho * 512) / (1024 ** 3)
-                                                device_atual["Tamanho"] = tamanho_formatado
+                                                device_atual["Tamanho"] = f"{tamanho_formatado}GB"
 
                                                 device_atual["Caminho"] = device.properties.get("DEVNAME")
                                                 device_atual["Partições"] = []
