@@ -21,7 +21,7 @@ def ini_interface():
     es = ttk.Style(janela)
     es.theme_use("clam")
     es.configure("TNotebook", background="#1F1F1F", bordercolor="#1B1B1B", lightcolor="#111111", darkcolor="#111111")
-    es.configure("InteriorAba.TFrame", background="#1B1B1B", bordercolor="#1B1B1B")
+    es.configure("InteriorAba.TFrame", background="#1B1B1B")
     es.configure("TNotebook.Tab", foreground="#000000", background="#1B1B1B", bordercolor="#111111", lightcolor="#111111")
     es.map(style="TNotebook.Tab", background=[("selected", "#1B1B1B"), ("active", "#2B2A2A")], bordercolor=[("selected", "#111111"), ("active", "#111111")], lightcolor=[("active", "#111111"), ("selected", "#111111")])
     
@@ -51,9 +51,10 @@ def ini_interface():
     canvas.bind("<Configure>", scroll)
 
     atalhos = []
+    bordas = []
 
     def criar_aba(dic):
-        global note, img_atalho
+        global note, img_atalho, img_pen
 
         aba = ttk.Frame(note, style="InteriorAba.TFrame")
         note.add(aba, text=f"{dic["Modelo"]}")
@@ -61,14 +62,26 @@ def ini_interface():
         def entrar():
             note.select(aba)
 
-        img_atalho_pil = Image.open("src/meowflash/assets/img-usb.png")
-        img_atalho_pilf = img_atalho_pil.resize((42, 42))
-        img_atalho = ImageTk.PhotoImage(img_atalho_pilf)
+        es.configure("InteriorAbabtn.TFrame", background="#1B1B1B")
+        es.configure("Borda.TFrame", background="#111111")
 
-        btn_aba = ttk.Button(frame_scroll, image=img_atalho, command=entrar, compound= tk.LEFT)
-        btn_aba.pack(fill="x", ipady=40)
+        btn_aba = ttk.Frame(frame_scroll, style="InteriorAbabtn.TFrame")
+        btn_aba.pack(fill="x", ipady=70)
+        btn_aba.bind("<Button-1>", lambda event: entrar())
+
+        borda_aba = ttk.Frame(frame_scroll, style="Borda.TFrame", height=2)
+        borda_aba.pack(fill="x")
+        borda_aba.pack_propagate(False)
+
+        pen_img = Image.open("src/meowflash/assets/img-usb.png")
+        pen_imgf = pen_img.resize((100, 100))
+        img_pen = ImageTk.PhotoImage(pen_imgf)
+
+        img_label = tk.Label(btn_aba, image=img_pen, bg="#1B1B1B")
+        img_label.place(x=10, y=10)
 
         atalhos.append(btn_aba)
+        bordas.append(borda_aba)
 
     def excluir_aba(remover):
         global note
@@ -79,9 +92,15 @@ def ini_interface():
             if note.tab(id, "text") == f"{remover}":
                 note.forget(id)
                 atalhos[local-1].destroy()
+                bordas[local-1].destroy()
                 atalhos.pop(local-1)
+                bordas.pop(local-1)
             else:
                 local += 1
 
-    janela.protocol("WM_DELETE_WINDOW", janela.destroy)
+    def close():
+        janela.destroy()
+        hardware.close()
+
+    janela.protocol("WM_DELETE_WINDOW", close)
     janela.mainloop()

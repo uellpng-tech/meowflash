@@ -5,6 +5,10 @@ import threading
 from src.meowflash import interface
              
 context = pyudev.Context()
+loop = threading.Event()
+
+def close():
+    loop.set()
 
 pendrives = []
 
@@ -12,7 +16,11 @@ def monitor_usb():
     monitor = pyudev.Monitor.from_netlink(context)
     monitor.filter_by('block')
 
-    for device in iter(monitor.poll, None):
+    while not loop.is_set():
+        device = monitor.poll(timeout=1)
+
+        if device is None:
+               continue
         
         if device.action == "add":
                 if device.find_parent("usb"):
